@@ -1,1 +1,55 @@
+/dts-v1/;
+/plugin/;
 
+/ {
+    compatible = "brcm,bcm2835";
+
+    /* Fragment 0: включаем I2S интерфейс Pi */
+    fragment@0 {
+        target = <&i2s>;
+        __overlay__ {
+            status = "okay";
+        };
+    };
+
+    /* Fragment 1: dummy codec node — Pi не знает о реальном DAC,
+       тактирование приходит от AK4113 извне */
+    fragment@1 {
+        target-path = "/";
+        __overlay__ {
+            ddplayer_codec: ddplayer-codec {
+                #sound-dai-cells = <0>;
+                compatible = "linux,snd-soc-dummy";
+                status = "okay";
+            };
+        };
+    };
+
+    /* Fragment 2: sound card — Pi как I2S SLAVE */
+    fragment@2 {
+        target = <&sound>;
+        __overlay__ {
+            compatible = "simple-audio-card";
+            simple-audio-card,name = "DDPlayer";
+            status = "okay";
+
+            simple-audio-card,dai-link@0 {
+                format = "i2s";
+
+                /* CPU (Pi) — НЕ master, не генерирует BCLK/LRCLK */
+                simple-audio-card,cpu {
+                    sound-dai = <&i2s>;
+                    dai-tdm-slot-num = <2>;
+                    dai-tdm-slot-width = <32>;
+                };
+
+                /* Codec — объявлен master (BCLK/LRCLK приходят от AK4113) */
+                simple-audio-card,codec {
+                    sound-dai = <&ddplayer_codec>;
+                    bitclock-master;
+                    frame-master;
+                };
+            };
+        };
+    };
+};
