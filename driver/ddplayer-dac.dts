@@ -47,8 +47,8 @@
 				i2s-controller = <&i2s>;
 				status = "okay";
 
-				clock4844-gpios   = <&gpio 5 0>;
-				clock48192-gpios  = <&gpio 6 0>;
+				clock4844-gpios   = <&gpio 6 0>;
+				clock48192-gpios  = <&gpio 5 0>;
 				clock96192-gpios  = <&gpio 13 0>;
 				mute-gpios        = <&gpio 16 0>;
 				reset-gpios       = <&gpio 26 0>;
