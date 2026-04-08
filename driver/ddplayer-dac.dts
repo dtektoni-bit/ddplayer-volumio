@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Device Tree Overlay for ddplayer DAC
+ *
+ * GPIO pin assignments (active high):
+ *   GPIO 5  - clock4844   (44.1/48 kHz domain select)
+ *   GPIO 6  - clock48192  (48/192 kHz domain select)
+ *   GPIO 13 - clock96192  (96/192 kHz domain select)
+ *   GPIO 16 - mute
+ *   GPIO 26 - reset
+ *
+ * Adjust gpio pins to match your hardware.
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+	/* Enable I2S interface */
+	fragment@0 {
+		target = <&i2s>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	/* PCM5102A codec (no I2C, directly on I2S bus) */
+	fragment@1 {
+		target-path = "/";
+		__overlay__ {
+			pcm5102a_codec: pcm5102a-codec {
+				#sound-dai-cells = <0>;
+				compatible = "ti,pcm5102a";
+				status = "okay";
+			};
+		};
+	};
+
+	/* ddplayer DAC machine driver */
+	fragment@2 {
+		target-path = "/";
+		__overlay__ {
+			ddplayer_dac: ddplayer-dac {
+				compatible = "ddplayer,ddplayer-dac";
+				i2s-controller = <&i2s>;
+				status = "okay";
+
+				clock4844-gpios   = <&gpio 5 0>;
+				clock48192-gpios  = <&gpio 6 0>;
+				clock96192-gpios  = <&gpio 13 0>;
+				mute-gpios        = <&gpio 16 0>;
+				reset-gpios       = <&gpio 26 0>;
+			};
+		};
+	};
+};
