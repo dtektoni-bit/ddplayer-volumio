@@ -21,10 +21,11 @@ echo "================================================"
 need_compile=true
 
 if [ -f "$PREBUILT_KO" ]; then
-    KO_KERNEL=$(tr -d '\0' < "$PREBUILT_KO" | grep -o 'vermagic=[^ ]*' | cut -d= -f2 | head -1)
-    echo "Pre-built module kernel: $KO_KERNEL"
-    echo "Running kernel:          $KERNEL_VER"
-    if [ "$KO_KERNEL" = "$KERNEL_VER" ]; then
+    KO_VER=$(tr -d '\0' < "$PREBUILT_KO" | grep -o 'vermagic=[^ ]*' | cut -d= -f2 | head -1 | cut -d- -f1)
+    RUN_VER=$(echo "$KERNEL_VER" | cut -d- -f1)
+    echo "Pre-built module kernel: $KO_VER"
+    echo "Running kernel:          $RUN_VER"
+    if [ "$KO_VER" = "$RUN_VER" ]; then
         echo "Kernel matches - using pre-built module"
         need_compile=false
     else
