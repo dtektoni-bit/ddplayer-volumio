@@ -12,24 +12,24 @@ Volumio 4 plugin for DDPlayer I2S Slave DAC with external clock generator.
 
 ## GPIO Pin Assignment
 
-| GPIO (BCM) | Pi Pin | Function |
-|---|---|---|
-| 6 | 31 | Clock grid select (LOW=44.1kHz, HIGH=48kHz) |
-| 5 | 29 | OCKS0 - AK4113 clock multiplier bit 0 |
-| 13 | 33 | OCKS1 - AK4113 clock multiplier bit 1 |
-| 16 | 36 | Mute (active high) |
-| 26 | 37 | Reset (active high) |
+| GPIO (BCM) | Pi Pin | AK4113 | Function |
+|---|---|---|---|
+| 6 | 31 | - | Clock grid select (LOW=44.1kHz, HIGH=48kHz) |
+| 5 | 29 | OCKS1 | Clock multiplier bit 1 |
+| 13 | 33 | OCKS0 | Clock multiplier bit 0 |
+| 16 | 36 | - | Mute (active high) |
+| 26 | 37 | - | Reset (active high) |
 
 ## Sample Rate / GPIO Table
 
-| Sample Rate | GPIO6 | GPIO5 | GPIO13 |
+| Sample Rate | GPIO 6 (grid) | GPIO 13 (OCKS0) | GPIO 5 (OCKS1) |
 |---|---|---|---|
-| 44100 Hz | LOW | LOW | LOW |
-| 48000 Hz | HIGH | HIGH | LOW |
-| 88200 Hz | LOW | LOW | HIGH |
-| 96000 Hz | HIGH | LOW | HIGH |
-| 176400 Hz | LOW | HIGH | HIGH |
-| 192000 Hz | HIGH | HIGH | HIGH |
+| 44100 Hz | LOW | 1 | 0 |
+| 48000 Hz | HIGH | 1 | 0 |
+| 88200 Hz | LOW | 0 | 0 |
+| 96000 Hz | HIGH | 0 | 0 |
+| 176400 Hz | LOW | 1 | 1 |
+| 192000 Hz | HIGH | 1 | 1 |
 
 ## Installation
 
@@ -53,6 +53,17 @@ After installation:
 - Select **DDPlayer DAC**
 - Save and reboot
 
+## Note on long installation
+
+If SSH disconnects during compilation, use `screen`:
+
+```bash
+sudo apt-get install -y screen
+screen -S install
+sudo ./install.sh
+# If disconnected: screen -r install
+```
+
 ## Uninstall
 
 ```bash
@@ -63,15 +74,8 @@ sudo reboot
 
 ## Notes
 
-- The kernel module is pre-built for Volumio kernel `6.12.74-v7l+`
-- If Volumio updates to a new kernel, the script will recompile automatically
-- SSH timeout during installation: use `screen` to avoid disconnection:
-  ```bash
-  sudo apt-get install -y screen
-  screen -S install
-  sudo ./install.sh
-  # If disconnected: screen -r install
-  ```
+- Pre-built kernel module is for Volumio kernel `6.12.74-v7l+`
+- If Volumio updates to a new kernel, the script recompiles automatically
 
 ## Credits
 
